@@ -1,0 +1,8 @@
+@define-color --text-color              #f9a039;
+@define-color --text-color              #000000;
+@define-color --tile-bg                 #afafaf;
+@define-color --flagged-tile-bg         #7acf7a;
+@define-color --unsure-tile-flagged     #cecf7a;
+@define-color --game-paused             #bebebe;
+@define-color --tile-opened             #9ea2eb;
+@define-color --mine-opened             #df4f4f;

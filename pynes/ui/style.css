@@ -1,0 +1,114 @@
+@import url("colors.css");
+
+#tile-won,
+#tile-playing,
+#tile-paused,
+#tile-label,
+#mine,
+#tile,
+#tile-flagged,
+#tile-flagged-u,
+#tile-flagged-x,
+#tile-on,
+#tile-shade {
+  padding: 0;
+  background-image: none;
+  background: none;
+  border-width: 0;
+  border-style: none;
+  text-shadow: none;
+  color: @--text-color;
+}
+
+#tile-flagged,
+#tile-flagged-u,
+#tile-flagged-x {
+  color: #ffffff;
+  text-shadow: none;
+}
+
+#tile:focus,
+#tile-flagged:focus,
+#tile-flagged-u:focus,
+#tile-flagged-x:focus,
+#tile-on:focus,
+#mine:focus {
+  background-image: linear-gradient(40deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+  text-shadow: none;
+}
+
+#tile:hover,
+#tile-flagged:hover,
+#tile-flagged-u:hover,
+#tile-flagged-x:hover,
+#tile-on:hover,
+#mine:hover {
+  background-image: linear-gradient(40deg, rgba(10, 10, 10, 0.1), rgba(10, 10, 10, 0.1));
+  text-shadow: none;
+}
+
+#tile-shade {
+  background-image: linear-gradient(40deg, rgba(0,0,0,0.2), rgba(0,0,0,0.2));
+  text-shadow: none;
+}
+
+#tile {
+  background-color: @--tile-bg;
+
+}
+#tile-flagged {
+  background-color: @--flagged-tile-bg;
+}
+
+#tile-flagged-u {
+  background-color: @--unsure-tile-flagged;
+}
+
+#tile-flagged-x {
+  background-color: #ec9999;
+}
+
+#tile-failed {
+  background-color: rgba(219, 89, 89, 0.702);
+}
+#tile-failed label,
+#tile-won label{
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 500;
+}
+
+#menu-button{
+  border-right: 1px solid #555555;
+}#menu-button:hover{
+  border-right: none;
+}
+
+
+#tile-won {
+  background-color: rgba(80, 214, 112, 0.502);
+}
+
+#tile-playing {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+#tile-paused {
+  background-color: @--game-paused;
+}
+
+#tile-label {
+  font-size: 19px;
+}
+
+#tile-on {
+  background-color: @--tile-opened;
+}
+
+#mine {
+  background-color: @--mine-opened;
+}
+
+#pref-main-box {
+  padding: 5px;
+}
