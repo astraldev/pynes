@@ -16,17 +16,15 @@ architectures:
 apps:
   pynes:
     command: bin/pynes
+    command: desktop-launch $SNAP/usr/bin/org.astralco.pyne
+    desktop: usr/share/applications/org.astralco.pyne.desktop
+    plugs: [home, desktop]
 
 parts:
   pynes:
     source: https://github.com/astraldev/pynes.git
     plugin: python
-    command: desktop-launch $SNAP/usr/bin/org.astralco.pyne
-    desktop: usr/share/applications/org.astralco.pyne.desktop
     requirements: ['requirements.txt']
-    plugs: 
-        - desktop
-
     stage-packages:
         - libcairo2
         - libgirepository1.0-1
@@ -35,7 +33,3 @@ parts:
         - libgtk-4-1
         - pkg-config
         - libcairo-gobject2
-        - libcairo2
-        - libfontconfig1
-        - libfreetype6
-        - libpixman-1-0
