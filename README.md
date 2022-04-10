@@ -4,6 +4,7 @@ by AstralDev
 ## Description
 Pynes is a PyGtk (Gtk 4) based mine game. It is a basic mine game with different levels with adjustable difficulty.
 ![App Window](https://github.com/astraldev/pynes/blob/master/images/app.png)
+
 Suitable for all distros.
 
 Highly customizable
