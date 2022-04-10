@@ -26,9 +26,9 @@ class PrefHandler(Gtk.Dialog):
             
     def __init__(self, parent, *args, **kwargs):
         super().__init__(title="Preferences", transient_for = parent, *args, **kwargs)
-        self.add_buttons("Reset", 335)
-        # self.add_buttons()
-
+        reset_btn = self.add_button("Reset", 335)
+        reset_btn.add_css_class('destructive-action')
+        
         color_box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
         main_box = self.get_content_area()
         
@@ -161,11 +161,14 @@ class PrefHandler(Gtk.Dialog):
     
     def change_css_file(self, data):
         open(CSS_FILES.COLORS, "w").write(data)
-        self._set_up_colors()
         css = Gtk.CssProvider()
         css.load_from_path(CSS_FILES.MAIN)
         screen = Gdk.Display.get_default()
         Gtk.StyleContext().add_provider_for_display(screen, css, 600)
+        self.update_colors()
+
+    def update_colors(self, *args):
+        self.colors = self._set_up_colors()
     
     def reset_all(self, *res):
         if res[1] != 335: return
@@ -259,7 +262,6 @@ class GameHandler:
                 time_hour = int(time.split(
                     ":")[-3]) if len(time.split(":")) > 2 else 0
             except Exception as e:
-                print(e)
                 continue
             time = Time(time_sec, time_min, time_hour).to_seconds()
             res_tar = round(time / (mines * num), 8)
@@ -533,11 +535,6 @@ class Tile(Gtk.ToggleButton):
         super().__init__(*args, **kwargs)
         self.icon_position = 0
 
-        gesture = Gtk.GestureClick()
-        gesture.set_button(Gdk.BUTTON_SECONDARY)
-        gesture.connect('pressed', self._right_clicked)
-
-        self.add_controller(gesture)
         self.connect("toggled", self.clicked)
         self.connect("clicked", self.clicked)
         self.set_size_request(24, 24)
@@ -583,11 +580,6 @@ class Tile(Gtk.ToggleButton):
                 # self.set_label("")
                 if self in GameHandler.FlaggedTiles:
                     GameHandler.FlaggedTiles.remove(self)
-
-    def _right_clicked(self, gesture, *event):
-        # Right click event
-        if gesture.get_button() == Gdk.BUTTON_SECONDARY:
-            self._toogle_icon(gesture.get_widget())
 
 
 class TileBox(Gtk.Overlay, GameHandler):
@@ -888,6 +880,7 @@ class GameOptionBox(Gtk.Box):
             self.pause_button.set_sensitive(False)
             self.restart_button.set_label("Play Again")
             return
+        
         opened = len(GameHandler.OpenedTiles) if len(
             GameHandler.OpenedTiles) > 9 else "0" + str(len(GameHandler.OpenedTiles))
         self.s_tiles_label.set_text("{0} | {1}".format(
@@ -899,6 +892,7 @@ class GameOptionBox(Gtk.Box):
     def _right_clicked(self, gesture, *event):
         # Right click event
         if gesture.get_button() == Gdk.BUTTON_SECONDARY:
+            gesture.get_widget()._toogle_icon()
             self.s_flagged_label.set_text("{} | {}".format(len(GameHandler.FlaggedTiles), len(GameHandler.MineTiles)))
 
     def start(self, *args):
@@ -907,6 +901,7 @@ class GameOptionBox(Gtk.Box):
             "0 | {}".format(len(GameHandler.WinningTiles)))
         self.s_flagged_label.set_text(
             "0 | {}".format(len(GameHandler.MineTiles)))
+
         for tile in GameHandler.Tiles:
             tile.connect("toggled", self.opened_tile)
             gesture = Gtk.GestureClick()

@@ -1,11 +1,11 @@
 
 import os
-from pynes.constants import COLORS, CONFIG_DIR, STYLE, LEADERBOARD_FILE, LB_TEXT, AnimationDir
+from pynes.constants import COLORS, CONFIG_DIR, CSS_FILES, STYLE, LEADERBOARD_FILE, LB_TEXT, AnimationDir
 
 def setup_css_file(force=False):
-    fn =  os.path.join(CONFIG_DIR, "style.css")
-    fn2 = os.path.join(CONFIG_DIR, "colors.css")
-    fn3 = os.path.join(CONFIG_DIR, "colors.backup.css")
+    fn =  CSS_FILES.MAIN
+    fn2 = CSS_FILES.MAIN_COLORS
+    fn3 = CSS_FILES.COLORS
     
     if os.path.isfile(os.path.expanduser(fn3)) and os.path.isfile(os.path.expanduser(fn2)):
         fn2 = fn3
