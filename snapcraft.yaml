@@ -30,6 +30,5 @@ parts:
         - libgirepository-1.0-1
         - gir1.2-gtk-4.0
         - python3-gi
-        - libgtk-4-1
         - pkg-config
         - libcairo-gobject2
