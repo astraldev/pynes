@@ -27,7 +27,6 @@ parts:
     stage-packages:
         - libcairo2
         - libgirepository-1.0-1
-        - gir1.2-gtk-4.0
         - python3-gi
         - pkg-config
         - libcairo-gobject2
