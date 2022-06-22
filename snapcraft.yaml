@@ -15,7 +15,6 @@ architectures:
 
 apps:
   pynes:
-    command: bin/pynes
     command: desktop-launch $SNAP/usr/bin/org.astralco.pyne
     desktop: usr/share/applications/org.astralco.pyne.desktop
     plugs: [home, desktop]
