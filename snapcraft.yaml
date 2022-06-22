@@ -32,3 +32,5 @@ parts:
         - python3-gi
         - pkg-config
         - libcairo-gobject2
+        - libgtk-4-bin 
+        - libgtk-4-common
