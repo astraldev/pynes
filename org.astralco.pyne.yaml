@@ -1,0 +1,15 @@
+app-id: org.flatpak.Hello
+runtime: org.gnome.Platform
+runtime-version: '41'
+sdk: org.gnome.Sdk
+command: pynes
+finish-args:
+  - --filesystem=~/.config/
+modules:
+  - name: pynes
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/ap
+    sources:
+      - type: git
+        url: http://github.com/astraldev/pynes.git

@@ -1,21 +1,18 @@
 name: pynes # you probably want to 'snapcraft register <name>'
-base: core20 # the base snap is the execution environment for this snap
-version: '3.0.0' # just for humans, typically '1.2+git' or '1.3.2'
+base: core22 # the base snap is the execution environment for this snap
+version: '3.1.0' # just for humans, typically '1.2+git' or '1.3.2'
 summary: Awesome and entertaining mine game # 79 char long summary
 description: |
   The object of the game is to clear an abstract minefield without detonating a mine.
   Very highly customizable and entertaining mine game.
-
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
 
 architectures:
   - build-on: amd64
-    run-on: all
 
 apps:
   pynes:
-    command: bin/pynes
     command: desktop-launch $SNAP/usr/bin/org.astralco.pyne
     desktop: usr/share/applications/org.astralco.pyne.desktop
     plugs: [home, desktop]
@@ -24,11 +21,11 @@ parts:
   pynes:
     source: https://github.com/astraldev/pynes.git
     plugin: python
-    requirements: ['requirements.txt']
     stage-packages:
         - libcairo2
         - libgirepository-1.0-1
-        - gir1.2-gtk-4.0
         - python3-gi
         - pkg-config
         - libcairo-gobject2
+        - libgtk-4-bin 
+        - libgtk-4-common
