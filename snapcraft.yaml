@@ -14,7 +14,6 @@ architectures:
 apps:
   pynes:
     command: desktop-launch $SNAP/usr/bin/org.astralco.pyne
-    desktop: ./org.astralco.pyne.desktop
     plugs: [home, desktop]
 
 parts:
