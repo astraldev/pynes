@@ -14,7 +14,7 @@ architectures:
 apps:
   pynes:
     command: desktop-launch $SNAP/usr/bin/org.astralco.pyne
-    desktop: usr/share/applications/org.astralco.pyne.desktop
+    desktop: org.astralco.pyne.desktop
     plugs: [home, desktop]
 
 parts:
@@ -28,8 +28,4 @@ parts:
         - pkg-config
         - libcairo-gobject2
         - libgtk-4-bin 
-<<<<<<< HEAD
         - libgtk-4-common
-=======
-        - libgtk-4-common
->>>>>>> e0f2bf61c218302416fc4068feb09f23bde2e119
