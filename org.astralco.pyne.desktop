@@ -1,7 +1,6 @@
 [Desktop Entry]
 Name=Pynes
 Comment=A basic mine (minesweeper) game
-TryExec=pynes
 Exec=pynes
 Icon=pynes
 Type=Application

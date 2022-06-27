@@ -15,16 +15,12 @@ apps:
   pynes:
     command: desktop-launch $SNAP/usr/bin/org.astralco.pyne
     plugs: [home, desktop]
+    extensions: [gnome-40]
 
 parts:
   pynes:
     source: https://github.com/astraldev/pynes.git
     plugin: python
+    python-requirements: ['requirements.txt']
     stage-packages:
-        - libcairo2
-        - libgirepository-1.0-1
         - python3-gi
-        - pkg-config
-        - libcairo-gobject2
-        - libgtk-4-bin 
-        - libgtk-4-common
