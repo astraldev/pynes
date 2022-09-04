@@ -13,14 +13,13 @@ architectures:
 
 apps:
   pynes:
-    command: desktop-launch $SNAP/usr/bin/org.astralco.pyne
+    command: pynes
     plugs: [home, desktop]
-    extensions: [gnome-40]
 
 parts:
   pynes:
     source: https://github.com/astraldev/pynes.git
-    plugin: python
+    plugin: python3
     python-requirements: ['requirements.txt']
     stage-packages:
         - python3-gi

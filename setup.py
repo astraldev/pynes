@@ -35,7 +35,6 @@ setup(
                      'ui/bomb.png', 'ui/flagged.png']
     },
     data_files=[
-        ("bin", ["scripts/pynes"]),
         ("share/applications", ["org.astralco.pyne.desktop"]),
         ("share/icons/hicolor/512x512/apps", icons["512"]),
         ("share/icons/hicolor/128x128/apps", icons["128"]),

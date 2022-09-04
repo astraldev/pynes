@@ -10,7 +10,7 @@ $ cd pynes
 
 > Using python setup __(Global Install)__
 ```bash
-$ sudo pip install .
+$ sudo pip install . --layout=deb
 ```
 > Using python setup __(User Install)__
 ```bash
