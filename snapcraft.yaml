@@ -21,5 +21,3 @@ parts:
     source: https://github.com/astraldev/pynes.git
     plugin: python
     python-requirements: ['requirements.txt']
-    stage-packages:
-        - PyGObject
