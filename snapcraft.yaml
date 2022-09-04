@@ -19,7 +19,7 @@ apps:
 parts:
   pynes:
     source: https://github.com/astraldev/pynes.git
-    plugin: python3
+    plugin: python
     python-requirements: ['requirements.txt']
     stage-packages:
-        - python3-gi
+        - PyGObject
