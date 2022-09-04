@@ -21,3 +21,6 @@ parts:
     source: https://github.com/astraldev/pynes.git
     plugin: python
     python-requirements: ['requirements.txt']
+    stage-packages:
+      - python3-gi
+      - python3-gi-cairo
