@@ -78,13 +78,6 @@
   font-weight: 500;
 }
 
-#menu-button{
-  border-right: 1px solid #555555;
-}#menu-button:hover{
-  border-right: none;
-}
-
-
 #tile-won {
   background-color: rgba(80, 214, 112, 0.502);
 }
@@ -110,5 +103,5 @@
 }
 
 #pref-main-box {
-  padding: 5px;
+  padding: 15px;
 }

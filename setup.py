@@ -18,7 +18,7 @@ os.system('chmod +777 scripts/pynes')
 
 setup(
     name="pynes",
-    version="3.0.0",
+    version="3.1.0",
     author="AstralDev",
     author_email="ekureedem480@gmail.com",
     description='A simple python mine game',
@@ -32,7 +32,7 @@ setup(
     packages=['pynes'],
     package_data={
         'pynes':['ui/style.css', 'ui/style.css', 'ui/colors.css', 'ui/menu.xml',
-                     'ui/bomb.png', 'ui/flagged.png']
+                     'ui/bomb.svg', 'ui/flagged.svg', 'ui/flagged-unsure.svg']
     },
     data_files=[
         ("share/applications", ["org.astralco.pyne.desktop"]),

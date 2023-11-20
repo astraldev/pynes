@@ -1,5 +1,6 @@
 # Pynes
-by AstralDev
+
+Mines for lines
 
 ## Description
 Pynes is a PyGtk (Gtk 4) based mine game. It is a basic mine game with different levels with adjustable difficulty.

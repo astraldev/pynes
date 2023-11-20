@@ -10,7 +10,7 @@ from pynes.utils import check_config, setup_css_file
 from pynes.constants import ANIMATE, CSS_FILES, MENU_XML, AnimationDir, LB_TEXT, LEADERBOARD_FILE, ICON
 import csv
 
-class PrefHandler(Gtk.Dialog):
+class PrefHandler(Gtk.Window):
     def _set_up_colors(self):
         # Parse colors.css 
         colors = {}
@@ -25,45 +25,57 @@ class PrefHandler(Gtk.Dialog):
         return colors
             
     def __init__(self, parent, *args, **kwargs):
-        super().__init__(title="Preferences", transient_for = parent, *args, **kwargs)
-        reset_btn = self.add_button("Reset", 335)
+        super().__init__(*args, **kwargs)
+
+        title_bar = Gtk.HeaderBar()
+        title_label = Gtk.Label(label="Preferences")
+
+        reset_btn = Gtk.Button(label="Reset")
         reset_btn.add_css_class('destructive-action')
-        
-        color_box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        main_box = self.get_content_area()
-        
+
+        title_bar.pack_start(reset_btn)
+        title_bar.set_title_widget(title_label)
+
+        self.set_titlebar(title_bar)
+        self.set_resizable(False)
+        self.set_modal(True)
+        self.set_transient_for(parent)
+                
         colors = self._set_up_colors()
-        frame = Gtk.Frame()
-        frame.set_label("Colors")
-        
+        self.colors = colors
+        self.color_buttons = []
+
+        color_list_box = Gtk.ListBox()
+        color_list_box.add_css_class("rich-list")
+        color_list_box.add_css_class("view")
+        color_list_box.set_selection_mode(Gtk.SelectionMode.NONE)
+
         for key in colors:
             label = Gtk.Label(label=key)
+            label_wrapper = Gtk.Box()
+            label_wrapper.append(label)
+            label_wrapper.set_hexpand(True)
+
             clr_button = Gtk.ColorButton()
             rgb_color = Gdk.RGBA()
             rgb_color.parse(colors[key])
             clr_button.set_rgba(rgb_color)
-            
-            box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-            self. _box = Gtk.Box()
-            self. _box.append(label)
-            box.append(self._box)
-            self._box.set_vexpand(True)
-            self._box.set_hexpand(True)
-            self._box.set_margin_top(4)
-            self._box.set_margin_end(4)
-            self._box.set_margin_start(4)
-            self._box.set_margin_bottom(4)
 
-            box.append(clr_button)
-            clr_button.set_vexpand(False)
-            clr_button.set_hexpand(False)
-            
+            color_row = Gtk.ListBoxRow()
+
+            inner_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+            inner_box.append(label_wrapper)
+            inner_box.append(clr_button)
+
+            color_row.set_child(inner_box)
+
+            color_list_box.append(color_row)
+
             clr_button.connect("color-set", self.color_changed, key)
-            
-            color_box.append(box)
-            
-        # Set up 2x3 grid for tiles
-        tile_grid = Gtk.Grid()
+            self.color_buttons.append(clr_button)
+        
+        # Set up 3x2 preview grid for tiles
+        tile_preview_grid = Gtk.Grid()
         tile_1 = Tile.dummy(state=False)
         tile_5 = Tile.dummy()
         tile_2 = Tile.dummy(mine=True)
@@ -71,70 +83,80 @@ class PrefHandler(Gtk.Dialog):
         tile_4 = Tile.dummy(question=True)
         tile_6 = Tile.dummy(is_active=True)
         
-        tile_grid.attach(tile_1, 0, 0, 1, 1)
-        tile_grid.attach(tile_5, 0, 1, 1, 1)
-        tile_grid.attach(tile_2, 0, 2, 1, 1)
-        tile_grid.attach(tile_3, 1, 1, 1, 1)
-        tile_grid.attach(tile_4, 1, 0, 1, 1)
-        tile_grid.attach(tile_6, 1, 2, 1, 1)
-        
-        #pause_button = Gtk.Button(label="Pause")
-        #pause_button.connect("clicked", _pause_grid)
-        
-        self.colors = colors
-        
-        # Box for color and grid -> [ color | grid ]
-        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        box.append(color_box)
-        color_box.set_vexpand(True)
-        color_box.set_hexpand(True)
-        
-        tile_grid.set_size_request(150,150)
-        box.append(tile_grid)
+        tile_preview_grid.attach(tile_1, 0, 0, 1, 1)
+        tile_preview_grid.attach(tile_2, 1, 0, 1, 1)
+        tile_preview_grid.attach(tile_3, 2, 0, 1, 1)
+        tile_preview_grid.attach(tile_5, 0, 1, 1, 1)
+        tile_preview_grid.attach(tile_4, 1, 1, 1, 1)
+        tile_preview_grid.attach(tile_6, 2, 1, 1, 1)
 
-        tile_grid.set_vexpand(True)
-        tile_grid.set_hexpand(True)
+        tile_preview_grid.set_vexpand(False)
+        tile_preview_grid.set_hexpand(True)
 
-        # tile_grid.set_valign(Gtk.Align.END)
+        tile_preview_grid.set_size_request(300, 200)
         
-        tile_grid.set_margin_top(5)
-        tile_grid.set_margin_end(5)
-        tile_grid.set_margin_start(5)
-        tile_grid.set_margin_bottom(5)
-        
-        frame.set_child(box)
-        
-        # Outer box for frame and pref buttons
-        button_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        
-        # -> Should Animate?
-        button_1 = Gtk.CheckButton()
-        button_1.set_label("Enable animations")
-        button_1.connect("toggled", self._animation_pref_changed)
-        
-        _active = True  if open(AnimationDir).read() == "True" else False
-        button_1.set_active(_active)
-        
-        button_box.append(button_1)
-        button_box.set_spacing(10)
-        button_1.set_vexpand(True)
-        button_1.set_hexpand(True)
-        
+        # Color list box with frame
+        colors_list_frame = Gtk.Frame()
+        colors_list_frame.set_child(color_list_box)
+
+        # Preview grid with frame
+        # preview_grid_wrapper = Gtk.Frame()
+        # preview_grid_wrapper.set_child(tile_preview_grid)
+
+        # Should animate checkbox
+
+        should_animate_checkbutton = Gtk.CheckButton()
+        should_animate_checkbutton.set_label("Enable animations")
+        should_animate_checkbutton.connect("toggled", self._animation_pref_changed)
+
+        should_animate_checkbutton.set_active(ANIMATE)
         
         outer_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        outer_box.append(frame)
-        outer_box.append(button_box)
+
+        outer_box.append(should_animate_checkbutton)
+
+        colors_label = Gtk.Label(label="UI colors")
+        _box = Gtk.Box()
+        _box.append(colors_label)
+
+        _box.set_margin_top(10)
+        _box.set_margin_bottom(5)
+        _box.set_margin_end(2)
+        _box.set_margin_start(2)
         
-        main_box.append(outer_box)
+        outer_box.append(_box)
+        outer_box.append(colors_list_frame)
+
+        # preview_label = Gtk.Label(label="Preview")
+        # _box = Gtk.Box()
+        # _box.append(preview_label)
+
+        # _box.set_margin_top(10)
+        # _box.set_margin_bottom(5)
+
+        # outer_box.append(_box)
+        # outer_box.append(preview_grid_wrapper)
+
         outer_box.set_vexpand(True)
         outer_box.set_hexpand(True)
-        
-        main_box.set_name("pref-main-box")
-        main_box.show()
-        self.connect('response', self.reset_all)
+                
+        outer_box.set_name("pref-main-box")
+
+        outer_box.set_margin_bottom(10)
+        outer_box.set_margin_top(10)
+        outer_box.set_margin_start(10)
+        outer_box.set_margin_end(10)
+
+        self.set_child(outer_box)
+
+        self.set_default_size(400, 400)
+
+        reset_btn.connect('clicked', self.reset_all)
     
     def _animation_pref_changed(self, button, *args):
-        open(AnimationDir, "w").write(str(button.get_active()))
+        global ANIMATE
+        ANIMATE = button.get_active()
+        open(AnimationDir, "w").write(str(int(ANIMATE)))
         
     def _parse_name(self, name:str):
         name = "--" + name.lower().replace(" ", "-").replace("background", "bg")
@@ -171,7 +193,7 @@ class PrefHandler(Gtk.Dialog):
         self.colors = self._set_up_colors()
     
     def reset_all(self, *res):
-        if res[1] != 335: return
+        # if res[1] != 335: return
         os.remove(CSS_FILES.COLORS)
         open(CSS_FILES.COLORS, 'w').write(open(CSS_FILES.MAIN_COLORS).read())
         css = Gtk.CssProvider()
@@ -179,13 +201,18 @@ class PrefHandler(Gtk.Dialog):
         screen = Gdk.Display.get_default()
         Gtk.StyleContext().add_provider_for_display(screen, css, 600)
         
-        open(AnimationDir, 'w').write(str(True))
-        self._set_up_colors()
-        
+        open(AnimationDir, 'w').write(str(int(ANIMATE)))
+        self.update_colors()
+
+        for (index, key) in enumerate(self.colors):
+            rgb_color = Gdk.RGBA()
+            rgb_color.parse(self.colors[key])
+            self.color_buttons[index].set_rgba(rgb_color)        
     
     def start(self, *args):
         self.present()
         self.connect('hide', self.hide)
+
     def hide(self, *args):
         self.destroy()
                   
@@ -567,7 +594,7 @@ class Tile(Gtk.ToggleButton):
                 # self.set_label("")
 
             if self.icon_position == 2:
-                img = Gtk.Image.new_from_file(ICON.FLAGGED)
+                img = Gtk.Image.new_from_file(ICON.UNSURE)
                 self.set_child(img)
                 img.set_icon_size(Gtk.IconSize.NORMAL)
                 self.set_name("tile-flagged-u")
@@ -674,7 +701,7 @@ class TileBox(Gtk.Overlay, GameHandler):
             GameHandler.GameOver = True
             self._open_tiles(GameHandler.Tiles, True)
             self.game_over_box.set_name("tile-won")
-            self.over_label.set_text("Congratulation, You passed.")
+            self.over_label.set_text("You won !!")
             if not self.game_over_box.get_parent(): self.add_overlay(self.game_over_box)
             self._show_leaderboard(self._add_score_to_leaderboard())
 
@@ -736,7 +763,7 @@ class TileBox(Gtk.Overlay, GameHandler):
             self.next += 1
 
         tile.connect("toggled", self.check_mine)
-        self.show()
+        # self.show()
         self.set_size_request(
             GameHandler.game_dimension[0]*24, GameHandler.game_dimension[1]*24)
 
@@ -997,26 +1024,27 @@ class GameBox(Gtk.Box, GameHandler):
             sleep(0.025)
             tile.set_name(nm)
 
-        if length_of_tiles > (16*16):
+        if length_of_tiles >= (16*16):
             GameHandler.AnimationOver = True
             return
-        self.tile_box.remove_overlay(self.tile_box.game_over_box)
 
+        self.tile_box.add_overlay(self.tile_box.game_over_box)
         for tile in GameHandler.Tiles:
             nm = tile.get_name()
             tile.set_name("tile-shade")
             sleep(0.025)
             Thread(target=_, args=[tile, nm]).start()
-        GameHandler.AnimationOver = True
-        if self.tile_box.game_over_box.get_parent() is None: self.tile_box.add_overlay(self.tile_box.game_over_box)
 
+        GameHandler.AnimationOver = True
+
+        self.tile_box.remove_overlay(self.tile_box.game_over_box)
 
     def on_restart(self, *args):
         self._setup_page()
         self.start()
 
 
-class LeaderBoard(Gtk.Dialog):
+class LeaderBoard(Gtk.Window):
     def _get_content(self, *args):
         return self.reader[1:]
 
@@ -1049,28 +1077,39 @@ class LeaderBoard(Gtk.Dialog):
     def __init__(self, loc, *args):
         super().__init__(*args)
         self.set_title("Leaderboard")
+
         self.reader = list(csv.reader(open(LEADERBOARD_FILE)))
+
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         scroll = Gtk.ScrolledWindow()
+
         self.reset_button = Gtk.Button(label="Reset")
+        self.reset_button.add_css_class('destructive-action')
+
+        header_bar = Gtk.HeaderBar()
+        header_bar.pack_start(self.reset_button)
+
         self.location = loc
         self.store = Gtk.ListStore(str, str, str, str, str)
         self.fill_store()
         self.treeview = Gtk.TreeView(model=self.store)
         scroll.set_child(self.treeview)
-        self.get_content_area().append(box)
+
         box.append(scroll)
-        box.append(self.reset_button)
         scroll.set_vexpand(True)
         scroll.set_hexpand(True)
+
+        self.set_titlebar(header_bar)
+        self.set_child(box)
+
         self.set_modal(True)
         self.set_default_size(300, 350)
         self.set_transient_for(GameHandler.MainWindow)
         self.set_resizable(False)
         self.connect('hide', self._hide)
         self.reset_button.connect('clicked', self.on_reset )
-        self.show()
         self.fill_columns()
+        self.present()
     
     def on_reset(self, *args):
         open(LEADERBOARD_FILE, 'w').write(LB_TEXT)
@@ -1296,7 +1335,7 @@ class MainWindow(Gtk.ApplicationWindow):
         builder = Gtk.Builder.new_from_string(MENU_XML, -1)
         menu = builder.get_object("app-menu")
         button = Gtk.MenuButton.new()
-        button.set_name('menu-button')
+        # button.set_name('menu-button')
         button.set_direction(Gtk.ArrowType.NONE)
         popover = Gtk.PopoverMenu.new_from_model(menu)
         button.set_popover(popover)
@@ -1317,14 +1356,20 @@ class Game(Gtk.Application, GameHandler):
         action.connect("activate", self.about)
         self.add_action(action)
         action = Gio.SimpleAction.new("quit", None)
+
         action.connect("activate", self.on_quit)
         self.add_action(action)
+        self.set_accels_for_action('app.quit', ["<Ctrl>Q"])
+
         action = Gio.SimpleAction.new("leaderboard", None)
         action.connect("activate", self.on_leaderboard)
         self.add_action(action)
+        self.set_accels_for_action('app.leaderboard', ['<Ctrl>L'])
+
         action = Gio.SimpleAction.new("preferences", None)
         action.connect("activate", self.on_pref)
         self.add_action(action)
+        self.set_accels_for_action('app.preferences', ['<Ctrl>P'])
     
     def on_pref(self, *args):
         pref = PrefHandler(self.window)
@@ -1353,7 +1398,7 @@ class Game(Gtk.Application, GameHandler):
             self.window.set_icon_name("pynes")
             self.add_window(self.window)
         self.window.present()
-        self.window.show()
+        # self.window.show()
 
     def on_quit(self, *args):
         os.system(f"rm {CSS}")

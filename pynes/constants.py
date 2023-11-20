@@ -1,4 +1,5 @@
 import os
+import re
 
 PATH = "/".join(__file__.split("/")[:-1])
 
@@ -8,11 +9,14 @@ STYLE    = open(f'{PATH}/ui/style.css').read()
 ICON_DIR = f'{PATH}/ui/'
 CONFIG_DIR = os.path.expanduser("~/.config/pynes" )
 AnimationDir = os.path.join(os.path.expanduser(CONFIG_DIR), "animation")
-ANIMATE = False
+
+_re_results = re.findall(r'\d', open(AnimationDir).read())
+ANIMATE = True if len(_re_results) > 0 and int(_re_results[0]) == 1 else False
 
 class ICON:
-    FLAGGED = os.path.join(ICON_DIR, 'flagged.png')
-    BOMB = os.path.join(ICON_DIR, 'bomb.png')
+    FLAGGED = os.path.join(ICON_DIR, 'flagged.svg')
+    UNSURE = os.path.join(ICON_DIR, 'flagged-unsure.svg')
+    BOMB = os.path.join(ICON_DIR, 'bomb.svg')
 
 class CSS_FILES:
     MAIN_COLORS = f'{PATH}/ui/colors.css'

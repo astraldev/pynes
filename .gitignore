@@ -5,3 +5,6 @@ debian/
 *.tar.gz
 dist/*
 .flatpak-builder/*
+env/
+build/
+dist/

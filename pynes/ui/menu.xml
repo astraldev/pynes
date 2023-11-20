@@ -5,10 +5,12 @@
                 <item>
                     <attribute name="label">Leaderboard</attribute>
                     <attribute name="action">app.leaderboard</attribute>
+                    <attribute name="accel">&lt;Ctrl&gt;L</attribute>
                </item>
                 <item>
                     <attribute name="label">Preferences</attribute>
                     <attribute name="action">app.preferences</attribute>
+                    <attribute name="accel">&lt;Ctrl&gt;P</attribute>
                </item>
             </section>
             <section>
@@ -19,6 +21,7 @@
                <item>
                     <attribute name="label">Quit</attribute>
                     <attribute name="action">app.quit</attribute>
+                    <attribute name="accel">&lt;Ctrl&gt;Q</attribute>
                </item>
             </section>
         </menu>
