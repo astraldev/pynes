@@ -1,0 +1,19 @@
+.halloween-theme {
+    --text-color            : #f5f3e7;
+    --game-paused-banner    : #3b235e;
+    --tile-bg               : #1b0e2a;
+    --tile-flagged          : #5b2c6f;
+    --tile-opened           : #f39c12;
+    --mine-opened           : #e74c3c;
+    --unsure-flagged        : #ffcc66;
+}
+
+:root {
+    --text-color            :#000000;
+    --game-paused-banner    :#bebebe;
+    --tile-bg               :#afafaf;
+    --tile-flagged          :#7acf7a;
+    --tile-opened           :#9ea2eb;
+    --mine-opened           :#df4f4f;
+    --unsure-flagged        :#cecf7a;
+}

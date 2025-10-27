@@ -56,7 +56,7 @@ while input("Are you done? [Y/N]: ").lower() != 'y' :
         sys.exit(1)
     tries += 1
 print("\nBegining Build\n")
-os.system(f'dpkg-buildpackage')
+os.system('dpkg-buildpackage')
 print("\nBuild over\n")
 
 _clean()

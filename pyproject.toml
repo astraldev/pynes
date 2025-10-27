@@ -1,0 +1,29 @@
+[project]
+name = "pynes"
+version = "3.2.0"
+description = "Simple mines bomb game"
+authors = [
+    { name = "astraldev", email = "ekureedem480@gmail.com" }
+]
+license = {text = "GPL v3"}
+readme = "README.md"
+requires-python = ">= 3.10,<4.0"
+dependencies = [
+    "pygobject (>=3.52.3,<4.0.0)",
+    "meson-python (>=0.18.0,<0.19.0)",
+    "pygobject-stubs (>=2.13.0,<3.0.0)",
+]
+
+[tool.ruff.lint]
+extend-select = ["W291"]
+ignore = ["E402"]
+
+[tool.poetry]
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.15.0"
+ruff = "^0.11.2"
+
+[build-system]
+requires = ["meson-python>=0.11.0"]
+build-backend = "mesonpy"

@@ -1,5 +1,22 @@
+from . import CONFIG_PATH
+from gi.repository import Gtk
+
 import os
 import re
+
+class Definitions(object):
+    config_path = os.path.join(CONFIG_PATH)
+
+    developer_name = "Ekure Edem"
+    developer_email = "ekureedem480@gmail.com"
+
+    app_name = "Pynes"
+    description = ""
+    copyright = "Copyright © 2021 - 2025 Ekure Edem"
+    developer = [f"{developer_name} <{developer_email}>"]
+    website = "https://github.com/astraldev/pynes"
+    issue_url = "https://github.com/astraldev/pynes/issues/new"
+    license = Gtk.License.GPL_3_0
 
 PATH = "/".join(__file__.split("/")[:-1])
 
@@ -7,7 +24,7 @@ MENU_XML = open(f'{PATH}/ui/menu.xml').read()
 COLORS   = open(f'{PATH}/ui/colors.css').read()
 STYLE    = open(f'{PATH}/ui/style.css').read()
 ICON_DIR = f'{PATH}/ui/'
-CONFIG_DIR = os.path.expanduser("~/.config/pynes" )
+CONFIG_DIR = os.path.expanduser(CONFIG_PATH)
 AnimationDir = os.path.join(os.path.expanduser(CONFIG_DIR), "animation")
 
 _re_results = re.findall(r'\d', open(AnimationDir).read())
@@ -30,4 +47,4 @@ LEADERBOARD_FILE = os.path.join(os.path.expanduser(CONFIG_DIR), "leaderboard")
 LB_TEXT = "#,User,Tiles,Mines,Time\n"
 LB_MAX = 5
 
-## Builder 
+## Builder

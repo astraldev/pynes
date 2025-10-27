@@ -18,14 +18,14 @@ os.system('chmod +777 scripts/pynes')
 
 setup(
     name="pynes",
-    version="3.1.0",
+    version="3.2.0",
     author="AstralDev",
     author_email="ekureedem480@gmail.com",
     description='A simple python mine game',
     long_description=str(open('README.md').read()),
     long_description_content_type="text/markdown",
     license="LGPL v3",
-    keywords="mines bomb",
+    keywords="mines bomb game",
     python_requires=">=3",
     install_requires=["timeutilities"],
     scripts=["scripts/pynes"],

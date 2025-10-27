@@ -17,7 +17,7 @@
   border-width: 0;
   border-style: none;
   text-shadow: none;
-  color: @--text-color;
+  color: var(--text-color);
 }
 
 #tile-flagged,
@@ -53,15 +53,15 @@
 }
 
 #tile {
-  background-color: @--tile-bg;
-
+  background-color: var(--tile-bg);
 }
+
 #tile-flagged {
-  background-color: @--flagged-tile-bg;
+  background-color: var(--tile-flagged);
 }
 
 #tile-flagged-u {
-  background-color: @--unsure-tile-flagged;
+  background-color: var(--unsure-flagged);
 }
 
 #tile-flagged-x {
@@ -71,6 +71,7 @@
 #tile-failed {
   background-color: rgba(219, 89, 89, 0.702);
 }
+
 #tile-failed label,
 #tile-won label{
   color: #ffffff;
@@ -87,7 +88,7 @@
 }
 
 #tile-paused {
-  background-color: @--game-paused;
+  background-color: var(--game-paused-banner);
 }
 
 #tile-label {
@@ -95,13 +96,9 @@
 }
 
 #tile-on {
-  background-color: @--tile-opened;
+  background-color: var(--tile-opened);
 }
 
 #mine {
-  background-color: @--mine-opened;
-}
-
-#pref-main-box {
-  padding: 15px;
+  background-color: var(--mine-opened);
 }
