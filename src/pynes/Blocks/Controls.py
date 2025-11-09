@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 
 from timeutilities import Time
 from gi.repository import Gtk, Gdk, GLib
-from ..GameHandler import GameHandler
+
+from pynes.Managers.GameState import GameState
 
 if TYPE_CHECKING:
     from .Tile import TileBox
@@ -116,7 +117,7 @@ class ControlsBox(Gtk.Box):
 
     def lost_focus(self, *args):
         paused_by = "window" if not self.pause else "btn"
-        if GameHandler.GameOver: return  # noqa: E701
+        if GameState.GameOver: return  # noqa: E701
         if paused_by == "btn" and self.pause: return # noqa: E701
         self.paused_by = paused_by
 
@@ -144,20 +145,20 @@ class ControlsBox(Gtk.Box):
             self.pause = False
 
     def opened_tile(self, tile, *args):
-        if GameHandler.GameOver:
+        if GameState.GameOver:
             self.pause_button.set_sensitive(False)
             self.restart_button.set_label("Play Again")
             return
 
-        opened_count = len(GameHandler.OpenedTiles)
+        opened_count = len(GameState.OpenedTiles)
         opened_display = f"{opened_count:02}"
 
         self.s_tiles_label.set_text(
-            f"{opened_display} | {len(GameHandler.WinningTiles)}"
+            f"{opened_display} | {len(GameState.WinningTiles)}"
         )
 
         self.s_flagged_label.set_text(
-            f"{len(GameHandler.FlaggedTiles)} | {len(GameHandler.MineTiles)}"
+            f"{len(GameState.FlaggedTiles)} | {len(GameState.MineTiles)}"
         )
 
         return True
@@ -166,19 +167,19 @@ class ControlsBox(Gtk.Box):
         # Right click event
         if gesture.get_button() == Gdk.BUTTON_SECONDARY:
             gesture.get_widget()._toogle_icon()
-            self.s_flagged_label.set_text("{} | {}".format(len(GameHandler.FlaggedTiles), len(GameHandler.MineTiles)))
+            self.s_flagged_label.set_text("{} | {}".format(len(GameState.FlaggedTiles), len(GameState.MineTiles)))
 
     def start(self, *args):
         self.s_time_label.set_text("00:00")
         self.s_tiles_label.set_text(
-            f"0 | {len(GameHandler.WinningTiles)}"
+            f"0 | {len(GameState.WinningTiles)}"
         )
 
         self.s_flagged_label.set_text(
-            f"0 | {len(GameHandler.MineTiles)}"
+            f"0 | {len(GameState.MineTiles)}"
         )
 
-        for tile in GameHandler.Tiles:
+        for tile in GameState.Tiles:
             tile.connect("toggled", self.opened_tile)
             gesture = Gtk.GestureClick()
             gesture.set_button(Gdk.BUTTON_SECONDARY)
@@ -188,10 +189,10 @@ class ControlsBox(Gtk.Box):
         self.tick_id = GLib.timeout_add_seconds(1, self._tick)
 
     def _tick(self, *args):
-        if GameHandler.GameOver:
+        if GameState.GameOver:
             return False
 
-        if self.pause or not GameHandler.AnimationOver:
+        if self.pause or not GameState.AnimationOver:
             return True
 
         self.s_time.tick()
@@ -203,6 +204,6 @@ class ControlsBox(Gtk.Box):
         display_time = f"{hour_str}{mins:02}:{secs:02}"
 
         self.s_time_label.set_text(display_time)
-        GameHandler.CurrentTime = display_time
+        GameState.CurrentTime = display_time
 
         return True

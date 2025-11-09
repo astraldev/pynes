@@ -1,10 +1,10 @@
 import os
+import csv
+
 from gi.repository import Adw, Gtk
 from timeutilities import Time
-
-from pynes.GameHandler import GameHandler
-from pynes.FileManager import FileManager
-import csv
+from pynes.Managers.GameState import GameState
+from pynes.Managers.FileManager import FileManager
 
 LEADERBOARD_FILE = FileManager.LEADERBOARD_FILE
 LB_TEXT = "#,User,Tiles,Mines,Time\n"
@@ -79,8 +79,8 @@ class LeaderBoardWindow(Adw.Window):
     @staticmethod
     def update_score():
         name = os.environ.get("USER", "Unknown")
-        specs = f"{len(GameHandler.Tiles)},{len(GameHandler.MineTiles)}"
-        time = GameHandler.CurrentTime
+        specs = f"{len(GameState.Tiles)},{len(GameState.MineTiles)}"
+        time = GameState.CurrentTime
         lines = list(FileManager.read_text(LEADERBOARD_FILE))[1:]
         line = f"{len(lines)},{name},{specs},{time}\n"
 

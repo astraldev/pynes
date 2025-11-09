@@ -1,5 +1,5 @@
 import os
-from pynes.FileManager import FileManager
+from pynes.Managers.FileManager import FileManager
 
 DefaultPreferences = {
     "animations_enabled": False,

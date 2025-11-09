@@ -1,7 +1,10 @@
 import os
 import re
+import sys
 import json
 from gi.repository import GLib
+
+print(os.path.join(GLib.get_user_config_dir(), "pynes"))
 
 class FileManager:
     DATA_DIR = ""
@@ -21,6 +24,7 @@ class FileManager:
     ICON_FLAGGED_UNSURE_FILE_PATH = os.path.join(DATA_DIR, "svg", "flagged_unsure.svg")
 
     APPLICATION_MENU_XML_PATH = os.path.join(DATA_DIR, "menu.xml")
+    APPLICATION_MENU_XML_DATA = ""
 
     @staticmethod
     def ensure_config_dir() -> None:
@@ -80,9 +84,21 @@ class FileManager:
             css = FileManager.read_text(path)
             return {name.strip(): value.strip() for name, value in re.findall(pattern, css)}
 
-        default_theme = parse_css(FileManager.DEFAULT_THEME_FILE)
+        default_theme = parse_css(FileManager.CSS_COLOR_THEME_FILE_PATH)
         user_theme = parse_css(FileManager.USER_THEME_FILE)
         return {**default_theme, **user_theme}
     
-    def load_data_file():
-        pass
+    @staticmethod
+    def read_application_menu_xml() -> str:
+        file_path = FileManager.APPLICATION_MENU_XML_PATH
+        xml_data = FileManager.APPLICATION_MENU_XML_DATA
+        if xml_data:
+            return xml_data
+        
+        try:
+            read_data = open(file_path).read()
+            FileManager.APPLICATION_MENU_XML_DATA = read_data
+            return read_data
+        except Exception:
+            print(f"A fatal error occured.\nSuggested Fix\n - Reinstall application\n - Fix missing or broken file at {file_path}")
+            sys.exit(1)

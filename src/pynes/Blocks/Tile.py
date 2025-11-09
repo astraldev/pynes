@@ -1,12 +1,16 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 
 from random import randint
 from enum import Enum
 from gi.repository import Gtk, GLib
 
-from pynes.GameHandler import GameHandler
-from pynes.FileManager import FileManager
+from pynes.Managers.FileManager import FileManager
+from pynes.Managers.GameState import GameState
 from pynes.Popups.Leaderboard import LeaderBoardWindow
+
+if TYPE_CHECKING:
+    from pynes.Managers.GameEngine import GameEngine
 
 class TileType(Enum):
     Plain = 0
@@ -55,32 +59,31 @@ class Tile(Gtk.ToggleButton):
             
         if state and not (question or flag or mine or is_active):
             tl.set_name("tile-on")
-            tl.set_label(str(tl.lab))
+            tl.set_label(str(tl.label))
             tl.set_active(state)
-            tl.toggled = True
+            tl.is_toggled = True
         
-        def _toggle(tile:Tile, *args):
-            if tile.toggled and not tile.icon_position > 1:
+        def _toggle(tile: Tile, *args):
+            if tile.is_toggled and tile.current_state != TileState.Unset:
                 tl.set_name("tile")
                 tl.set_label("")
                 tl.set_active(False)
-                tl.toggled = False
-                
-            elif not tile.icon_position > 1:
+                tl.is_toggled = False
+
+            elif tile.current_state == TileState.Unset:
                 tl.set_name("tile-on")
-                tl.set_label(str(tl.lab))
+                tl.set_label(str(tl.label))
                 tl.set_active(state)
-                tl.toggled = True
-        
+                tl.is_toggled = True
+
         if is_active:
             tl.connect("clicked", _toggle)
         
         return tl
 
-    def __init__(self, manager: GameHandler, position: int, tile_type: TileType, label: str, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, position: int, tile_type: TileType, label: str, *args, **kwargs):
+        super().__init__()
         self.current_state = TileState.Unset
-        self.__game_manager = manager
 
         self.connect("toggled", self.clicked)
         self.connect("clicked", self.clicked)
@@ -89,7 +92,7 @@ class Tile(Gtk.ToggleButton):
         self.active_dummy = False
         self.label = label
         self.type = tile_type
-        self.toggled = False
+        self.is_toggled = False
         self.dummy = False
         self.set_name("tile")
 
@@ -98,13 +101,13 @@ class Tile(Gtk.ToggleButton):
     
     def get_next_state(self, state: TileState):
         return {
-            [TileState.Unset]: TileState.Flagged,
-            [TileState.Flagged]: TileState.Unsure,
-            [TileState.Unsure]: TileState.Unset,
+            TileState.Unset: TileState.Flagged,
+            TileState.Flagged: TileState.Unsure,
+            TileState.Unsure: TileState.Unset,
         }[state]
 
     def _toogle_icon(self, *args):
-        if self.toggled: return  # noqa: E701
+        if self.is_toggled: return  # noqa: E701
 
         next_state = self.get_next_state(self.current_state)
 
@@ -114,7 +117,7 @@ class Tile(Gtk.ToggleButton):
 
             self.set_child(img)
             self.set_name("tile-flagged")
-            self.__game_manager.FlaggedTiles.append(self)
+            GameState.add_flagged_tile(self)
         
         elif next_state is TileState.Unsure:
             img = Gtk.Image.new_from_file(TileIcons.Unsure)
@@ -126,16 +129,16 @@ class Tile(Gtk.ToggleButton):
             self.set_child(None)
             self.set_name("tile")
 
-            if self in self.__game_manager.FlaggedTiles:
-                self.__game_manager.FlaggedTiles.remove(self)
+            if self in GameState.FlaggedTiles:
+                GameState.remove_flagged_tile(self)
 
         self.current_state = next_state
 
 class TileBox(Gtk.Overlay):
-    def __init__(self, manager: GameHandler, *args, **kwargs):
+    def __init__(self, engine: GameEngine, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.__game_manager = manager
+        self.engine = engine
         self.next_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.set_child(self.main_box)
@@ -145,7 +148,7 @@ class TileBox(Gtk.Overlay):
 
         self.next_box.append(self.flow)
         self.main_box.append(self.next_box)
-        self.dimensions = self.__game_manager.get_game_dimension()
+        self.dimensions = GameState.get_dimension()
 
         self.start = 0
         self.next = 0
@@ -163,7 +166,7 @@ class TileBox(Gtk.Overlay):
         self.game_over_box.set_name("tile-playing")
     
     def _is_game_over(self):
-        return GameHandler.GameOver
+        return GameState.GameOver
     
     def show_game_over_overlay(self):
         self.game_over_box.set_name("tile-failed")
@@ -180,9 +183,8 @@ class TileBox(Gtk.Overlay):
             self.add_overlay(self.game_over_box)
 
     def set_dimensions(self, *args):
-        self.dimensions = self.__game_manager.get_game_dimension()
+        self.dimensions = GameState.get_dimension()
         # self.flow.set_min_children_per_line(self.dimensions[0])
-        # self.flow.set_max_children_per_line(self.dimensions[0])
 
     # alias -> check_mine
     def open_tile(self, tile: Tile, *event):
@@ -190,7 +192,7 @@ class TileBox(Gtk.Overlay):
 
         # Do not open a flagged tile
         if tile.current_state is not TileState.Unset \
-            or tile.toggled or game_is_over:
+            or tile.is_toggled or game_is_over:
             return True
         
         # Set the on class to the tile that's not a bomb
@@ -198,16 +200,16 @@ class TileBox(Gtk.Overlay):
             tile.set_name("tile-on")
 
         location = tile.position
-        tile.toggled = True
+        tile.is_toggled = True
 
-        t_r = self.get_right_tile(location)
-        t_l = self.get_left_tile(location)
-        t_top = self.get_top_tile(location)
-        t_top_r = self.get_bottom_right_tile(location)
-        t_top_l = self.get_top_left_tile(location)
-        t_bottom = self.get_bottom_tile(location)
-        t_bottom_r = self.get_bottom_right_tile(location)
-        t_bottom_l = self.get_bottom_left_tile(location)
+        t_r = self.engine.get_right_tile(location)
+        t_l = self.engine.get_left_tile(location)
+        t_top = self.engine.get_top_tile(location)
+        t_top_r = self.engine.get_bottom_right_tile(location)
+        t_top_l = self.engine.get_top_left_tile(location)
+        t_bottom = self.engine.get_bottom_tile(location)
+        t_bottom_r = self.engine.get_bottom_right_tile(location)
+        t_bottom_l = self.engine.get_bottom_left_tile(location)
 
         # Check if tile is empty
         if tile.type == TileType.Plain and not game_is_over:
@@ -219,19 +221,19 @@ class TileBox(Gtk.Overlay):
         if tile.type == TileType.Numbered:
             tile.set_label(str(tile.label))
 
-        GameHandler.OpenedTiles.append(location)
+        GameState.add_opened_tile(location)
 
         if tile.type == TileType.Bomb:
-            self.__game_manager.end_game()
-            self._open_tiles(GameHandler.Tiles, True)
+            GameState.end_game()
+            self._open_tiles(GameState.Tiles, True)
             self.show_game_over_overlay()
 
-        opened = list(sorted(GameHandler.OpenedTiles))
-        winning = list(sorted(GameHandler.WinningTiles))
+        opened = list(sorted(GameState.OpenedTiles))
+        winning = list(sorted(GameState.WinningTiles))
 
         if (opened == winning) and not game_is_over:
-            self.__game_manager.end_game()
-            self._open_tiles(GameHandler.Tiles, True)
+            GameState.end_game()
+            self._open_tiles(GameState.Tiles, True)
             self.show_game_won_overlay()
             LeaderBoardWindow.update_score()
 
@@ -260,7 +262,7 @@ class TileBox(Gtk.Overlay):
             if tile.type is TileType.Numbered or tile.type is TileType.Plain:
                 tile.set_active(True)
 
-    def add_tile(self, tile):
+    def add_tile(self, tile: Tile):
         self.flow.attach(tile, self.start, self.next, 1, 1)
         tile.set_vexpand(True)
         tile.set_margin_end(2)
@@ -270,11 +272,11 @@ class TileBox(Gtk.Overlay):
         tile.set_hexpand(True)
 
         self.start += 1
-        if self.start == GameHandler.game_dimension[0]:
+        if self.start == GameState.game_dimension[0]:
             self.start = 0
             self.next += 1
 
         tile.connect("toggled", self.open_tile)
 
-        w, h = GameHandler.game_dimension[0]*24, GameHandler.game_dimension[1]*24
+        w, h = GameState.game_dimension[0]*24, GameState.game_dimension[1]*24
         self.set_size_request(w, h)

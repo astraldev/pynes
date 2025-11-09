@@ -1,7 +1,7 @@
 import re
 from gi.repository import Gtk, Adw, Gdk
 from pynes.Blocks.Tile import Tile
-from pynes.Preferences import Preferences
+from pynes.Managers.Preferences import Preferences
 
 __ColorMap = {
     "--text-color": "Text color",
