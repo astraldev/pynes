@@ -22,3 +22,13 @@ Any help is welcome with the pynes project.
 
 ## Licensing
 Pynes is licensed under LGPL v3
+
+## Development
+
+### Configure the project
+
+```sh
+meson setup <target-dir> --prefix=<path> --reconfigure
+meson compile -C <target-dir>
+meson install -C <target-dir>
+```

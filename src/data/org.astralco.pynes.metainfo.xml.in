@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>@APP_ID@</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Pynes@NAME_SUFFIX@</name>
+  <summary>A classic minesweeper game</summary>
+  
+  <description>
+    <p>
+      Pynes is a PyGTK (GTK 4) based minesweeper game. It is a classic mine game 
+      with different difficulty levels and adjustable settings.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Multiple difficulty levels (8x8, 16x16, 24x16)</li>
+      <li>Custom board size and mine percentage</li>
+      <li>Highly customizable UI colors</li>
+      <li>Animation effects (can be disabled)</li>
+      <li>Leaderboard to track your best times</li>
+      <li>Clean and modern GTK4/Libadwaita interface</li>
+    </ul>
+  </description>
+  
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/astraldev/pynes/blob/master/images/app.png</image>
+      <caption>Main game window</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/astraldev/pynes/blob/master/images/pref.png</image>
+      <caption>Preferences window</caption>
+    </screenshot>
+  </screenshots>
+  
+  <url type="homepage">https://github.com/astraldev/pynes</url>
+  <url type="bugtracker">https://github.com/astraldev/pynes/issues</url>
+  
+  <developer_name>Ekure Edem</developer_name>
+  <update_contact>ekureedem480@gmail.com</update_contact>
+  
+  <launchable type="desktop-id">@APP_ID@.desktop</launchable>
+  
+  <provides>
+    <binary>pynes</binary>
+  </provides>
+
+  <content_rating type="oars-1.1" />
+  
+  <releases>
+    <release version="3.2.0" date="2024-01-01">
+      <description>
+        <p>Latest release</p>
+      </description>
+    </release>
+  </releases>
+  
+  <categories>
+    <category>Game</category>
+    <category>LogicGame</category>
+  </categories>
+  
+  <keywords>
+    <keyword>minesweeper</keyword>
+    <keyword>mines</keyword>
+    <keyword>puzzle</keyword>
+    <keyword>game</keyword>
+  </keywords>
+</component>

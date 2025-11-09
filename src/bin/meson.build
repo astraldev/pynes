@@ -1,5 +1,5 @@
 configure_file(
-  input: './pynes.in',
+  input: 'pynes.in',
   output: 'pynes',
   configuration: conf,
   install: true,

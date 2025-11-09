@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Pynes
+Name=Pynes@NAME_SUFFIX@
 Comment=A basic mine (minesweeper) game
 Exec=pynes
 Icon=pynes
