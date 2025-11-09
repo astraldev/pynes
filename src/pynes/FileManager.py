@@ -23,12 +23,12 @@ class FileManager:
     APPLICATION_MENU_XML_PATH = os.path.join(DATA_DIR, "menu.xml")
 
     @staticmethod
-    def ensure_dir() -> None:
+    def ensure_config_dir() -> None:
         os.makedirs(FileManager.USER_CONFIG_DIR, exist_ok=True)
 
     @staticmethod
-    def read_json() -> dict:
-        FileManager.ensure_dir()
+    def read_user_config() -> dict:
+        FileManager.ensure_config_dir()
         if not os.path.exists(FileManager.PREF_FILE):
             return {}
         try:
@@ -38,8 +38,8 @@ class FileManager:
             return {}
 
     @staticmethod
-    def write_json(data: dict) -> None:
-        FileManager.ensure_dir()
+    def write_user_config(data: dict) -> None:
+        FileManager.ensure_config_dir()
         with open(FileManager.PREF_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
@@ -53,7 +53,7 @@ class FileManager:
 
     @staticmethod
     def write_text(path: str, content: str) -> None:
-        FileManager.ensure_dir()
+        FileManager.ensure_config_dir()
         with open(path, "w", encoding="utf-8") as f:
             f.write(content)
 
@@ -64,7 +64,7 @@ class FileManager:
 
     @staticmethod
     def write_theme(theme_data: dict) -> None:
-        FileManager.ensure_dir()
+        FileManager.ensure_config_dir()
         css_lines = [":root {"]
         for var, color in theme_data.items():
             css_lines.append(f"    {var}: {color};")
@@ -72,7 +72,7 @@ class FileManager:
         FileManager.write_text(FileManager.USER_THEME_FILE, "\n".join(css_lines))
 
     @staticmethod
-    def read_theme() -> dict:
+    def read_theme_data() -> dict:
         """Merge default and user themes. User overrides default."""
         pattern = r"(--[\w-]+)\s*:\s*([^;]+);"
 
