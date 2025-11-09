@@ -42,13 +42,13 @@ subdir('bin')
 exclude_pycache_dirs = run_command(
   'sh', '-c',
   '''
-  find src/pynes -type d -name __pycache__ | sed "s|^pynes/||"
+  find pynes -type d -name __pycache__ | sed "s|^pynes/||"
   ''',
   check: true
 ).stdout().strip().split('\n')
 
 # Install the entire pynes package recursively, excluding .pyc files
-install_subdir('src/pynes',
+install_subdir('pynes',
   install_dir: py_installation.get_install_dir(),
   exclude_directories: exclude_pycache_dirs,
   exclude_files: ['*.pyc']

@@ -2,16 +2,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from timeutilities import Time
-from gi.repository import Gtk, Adw, Gdk, GLib
+from gi.repository import Gtk, Gdk, GLib
 from ..GameHandler import GameHandler
 
 if TYPE_CHECKING:
     from .Tile import TileBox
 
+# This part is the right part of the game
+# when it starts
 class ControlsBox(Gtk.Box):
-    def __init__(self, app: Adw.ApplicationWindow, manager: GameHandler, tilebox: TileBox, *args):
+    def __init__(self, tilebox: TileBox, *args):
         super().__init__(*args, spacing=10)
-        self.__application = app
 
         self.orientation = Gtk.Orientation.VERTICAL
         self.tick_id = None
@@ -105,9 +106,10 @@ class ControlsBox(Gtk.Box):
         self.menu_button = button3
 
         self.pause_button.connect("clicked", self._btn_pause)
-        self.__application.connect("notify::is-active", self.lost_focus)
-
         self.pause_button.set_sensitive(True)
+
+        # TODO: Update the game application to bind this
+        # self.__application.connect("notify::is-active", self.lost_focus)
 
         self.pause = False
         self.paused_by = ""

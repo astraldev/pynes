@@ -4,10 +4,12 @@ from random import randint
 from enum import Enum
 from gi.repository import Gtk, GLib
 
+from pynes.Popups.Leaderboard import LeaderBoardWindow
+
 from ..constants import ICON
 
 if TYPE_CHECKING:
-    from pynes.GameHandler import GameHandler
+    from ..GameHandler import GameHandler
 
 class TileType(Enum):
     Plain = 0
@@ -159,7 +161,7 @@ class TileBox(Gtk.Overlay):
         self.game_over_box.set_name("tile-playing")
     
     def _is_game_over(self):
-        return self.__game_manager.is_game_over
+        return GameHandler.GameOver
     
     def show_game_over_overlay(self):
         self.game_over_box.set_name("tile-failed")
@@ -229,7 +231,7 @@ class TileBox(Gtk.Overlay):
             self.__game_manager.end_game()
             self._open_tiles(GameHandler.Tiles, True)
             self.show_game_won_overlay()
-            self._show_leaderboard(self._add_score_to_leaderboard())
+            LeaderBoardWindow.update_score()
 
         return True
 

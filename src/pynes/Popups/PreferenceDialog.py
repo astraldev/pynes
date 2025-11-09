@@ -1,6 +1,7 @@
-from ..GameTile import Tile
-from gi.repository import Gtk, Adw, Gdk
 import re
+from gi.repository import Gtk, Adw, Gdk
+from pynes.Blocks.Tile import Tile
+from pynes.Preferences import Preferences
 
 __ColorMap = {
     "--text-color": "Text color",
@@ -11,24 +12,8 @@ __ColorMap = {
     "--unsure-flagged": "Unsure Tile Color",
 }
 
-class Preferences:
-    AnimationsEnabled = False
-    DefaultColorThemeData = {}
-
-    UserModifiedColors = False
-    UserColorThemeData = {}
-
-    @staticmethod
-    def hydrate(): pass
-
-    @staticmethod
-    def persist(): pass
-
-    @staticmethod
-    def reset(): pass
-
-class PreferenceHandler(Adw.PreferencesDialog):
-    def __init__(self, parent, *args, **kwargs):
+class PreferenceDialog(Adw.PreferencesDialog):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         Preferences.hydrate()
 
@@ -132,4 +117,3 @@ class PreferenceHandler(Adw.PreferencesDialog):
     def reset_all(self, *res):
         Preferences.reset()
         self.refresh_preferences()
-

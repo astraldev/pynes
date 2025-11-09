@@ -40,11 +40,3 @@ class CSS_FILES:
     MAIN = os.path.join(CONFIG_DIR, 'style.css')
     COLORS = os.path.join(CONFIG_DIR, 'colors.css')
 
-
-## Leaderboard DATA files
-
-LEADERBOARD_FILE = os.path.join(os.path.expanduser(CONFIG_DIR), "leaderboard")
-LB_TEXT = "#,User,Tiles,Mines,Time\n"
-LB_MAX = 5
-
-## Builder

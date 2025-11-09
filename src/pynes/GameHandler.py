@@ -3,7 +3,7 @@ from io import StringIO
 from random import choice
 from timeutilities import Time
 
-from pynes.Blocks.Tile import Tile
+from pynes.Blocks.Tile import Tile, TileBox
 from pynes.constants import LB_TEXT, LEADERBOARD_FILE
 
 class GameHandler:
@@ -19,9 +19,10 @@ class GameHandler:
     CurrentTime = "00:00"
     GameOver = False
 
-    def __init__(self, *args):
+    def __init__(self, tilebox: TileBox, *args):
         GameHandler.game_dimension = [0, 0, 0]
         GameHandler.GameOver = False
+        self.tile_box = tilebox
 
     def end_game(self):
         GameHandler.GameOver = True
@@ -114,120 +115,22 @@ class GameHandler:
         open(LEADERBOARD_FILE, "w").write("\n".join(output))
         return loc
 
-    # Top
-    def get_top_tile(self, location):
-        position = location - GameHandler.game_dimension[0]
-        if position >= 0:
-            return GameHandler.Tiles[position]
+    def _get_tile(self, location, dx, dy):
+        """General method for getting neighboring tiles."""
+        row_len, col_len = self.game_dimension[:2]
+        row, col = divmod(location, row_len)
+        new_row, new_col = row + dx, col + dy
+        if 0 <= new_row < col_len and 0 <= new_col < row_len:
+            return GameHandler.Tiles[new_row * row_len + new_col]
 
-    # Bottom
-    def get_bottom_tile(self, location):
-        mx = len(GameHandler.Tiles)
-        position = location + GameHandler.game_dimension[0]
-        if (position < mx):
-            return GameHandler.Tiles[position]
-
-    # Right
-    def get_right_tile(self, location):
-        mx = len(GameHandler.Tiles)
-
-        # Positions to avoid
-        avoid = [GameHandler.game_dimension[0]]
-        position = location + 1
-
-        for x in range(GameHandler.game_dimension[1]):
-            avoid.append(avoid[x] + GameHandler.game_dimension[0])
-
-        if (position not in avoid) and position < mx:
-            return GameHandler.Tiles[position]
-
-    # Left
-    def get_left_tile(self, location):
-        avoid = [-1]
-        position = location - 1
-
-        for x in range(GameHandler.game_dimension[1]):
-            avoid.append(avoid[x]+GameHandler.game_dimension[0])
-
-        if (position not in avoid) and position >= 0:
-            return GameHandler.Tiles[position]
-
-    # Top Left
-    def get_top_left_tile(self, location):
-        avoid = [0]
-        avoid_right = [GameHandler.game_dimension[0]+1]
-        position = location - GameHandler.game_dimension[0] - 1
-
-        for x in range(GameHandler.game_dimension[1]):
-            avoid.append(avoid[x] + GameHandler.game_dimension[0])
-
-        for x in range(GameHandler.game_dimension[1]):
-            avoid_right.append(avoid[x] + GameHandler.game_dimension[0])
-
-        if location in avoid_right:
-            return
-
-        if position >= 0 and position not in avoid:
-            return GameHandler.Tiles[position]
-
-    # Bottom Left
-    def get_bottom_left_tile(self, location):
-        avoid = [-1]
-        avoid_right = [GameHandler.game_dimension[0]+1]
-        mx = len(GameHandler.Tiles)
-        position = location + GameHandler.game_dimension[0] - 1
-
-        for x in range(GameHandler.game_dimension[1]):
-            avoid.append(avoid[x]+GameHandler.game_dimension[0])
-
-        for x in range(GameHandler.game_dimension[1]):
-            avoid_right.append(avoid[x]+GameHandler.game_dimension[0])
-
-        if location in avoid_right:
-            return
-
-        if position < mx and (position) not in avoid:
-            return GameHandler.Tiles[position]
-
-    # Top Right
-    def get_top_right_tile(self, location):
-        avoid_left = [-1]
-        avoid = [GameHandler.game_dimension[0]]
-        position = location - GameHandler.game_dimension[0] + 1
-
-        for x in range(GameHandler.game_dimension[1]):
-            avoid.append(avoid[x]+GameHandler.game_dimension[0])
-
-        for x in range(GameHandler.game_dimension[1]):
-            avoid_left.append(avoid[x]+GameHandler.game_dimension[0])
-
-        if location in avoid_left:
-            return
-
-        if position >= 0 and position not in avoid:
-            return GameHandler.Tiles[position]
-
-    # Bottom Right
-    def get_bottom_right_tile(self, location):
-        avoid_left = [-1]
-        avoid = [GameHandler.game_dimension[0]]
-        position = location + GameHandler.game_dimension[0] + 1
-        mx = len(GameHandler.Tiles)
-
-        for x in range(GameHandler.game_dimension[1]):
-            avoid.append(avoid[x]+GameHandler.game_dimension[0])
-
-        for x in range(GameHandler.game_dimension[1]):
-            avoid_left.append(avoid[x]+GameHandler.game_dimension[0])
-
-        if location in avoid_left:
-            return
-
-        if location in avoid:
-            return GameHandler.Tiles[location]
-
-        if position < mx and position not in avoid:
-            return GameHandler.Tiles[position]
+    def get_top_tile(self, location): return self._get_tile(location, -1, 0)
+    def get_bottom_tile(self, location): return self._get_tile(location, 1, 0)
+    def get_left_tile(self, location): return self._get_tile(location, 0, -1)
+    def get_right_tile(self, location): return self._get_tile(location, 0, 1)
+    def get_top_left_tile(self, location): return self._get_tile(location, -1, -1)
+    def get_top_right_tile(self, location): return self._get_tile(location, -1, 1)
+    def get_bottom_left_tile(self, location): return self._get_tile(location, 1, -1)
+    def get_bottom_right_tile(self, location): return self._get_tile(location, 1, 1)
 
     def _set_up_game(self, area, m_locations):
         for index, item in enumerate(area):
@@ -276,33 +179,21 @@ class GameHandler:
 
         return area
 
-    def create_arrangement(self, *args):
-        total = GameHandler.game_dimension[0] * GameHandler.game_dimension[1]
+    def create_arrangement(self):
+        rows, cols, mine_percent = self.game_dimension
+        total = rows * cols
         total_array = list(range(total))
-        mine_array = total_array
 
-        # lol -- magic number multiplication
-        num_of_mines = int(round(total * (GameHandler.game_dimension[2] / 100) * 1.041666667, 0))
-        location_of_mines = self._put_mines(mine_array, num_of_mines)
-        total_array = self._set_up_game(total_array, location_of_mines)
+        num_of_mines = int(round(total * (mine_percent / 100) * 1.041666667))
+        mine_locations = self._put_mines(total_array.copy(), num_of_mines)
+        total_array = self._set_up_game(total_array, mine_locations)
+
         self.tile_box.set_dimensions()
-
         for index, tile_type in enumerate(total_array):
-            mine = (tile_type == "m")
-            # 0 = empty
-            # 1 = Number
-            # 2 = Mine
-            lab = tile_type
-
-            if tile_type == "":
-                tile_type = 0
-            elif isinstance(tile_type, int):
-                tile_type = 1
-            elif tile_type == "m":
-                tile_type = 2
-                lab = ""
-
-            tile = Tile(index, mine, tile_type, lab)
+            mine = tile_type == "m"
+            lab = "" if mine else tile_type
+            tile_type_val = 0 if tile_type == "" else 2 if mine else 1
+            tile = Tile(index, mine, tile_type_val, lab)
             self.tile_box.add_tile(tile)
             GameHandler.Tiles.append(tile)
 
