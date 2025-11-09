@@ -4,7 +4,6 @@ from pynes.Popups.PreferenceDialog import PreferenceDialog
 from pynes.Popups.About import AboutPynes
 from gi.repository import Gtk, Gio
 
-
 class Game(Gtk.Application):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, application_id="org.astralco.pyne", **kwargs)

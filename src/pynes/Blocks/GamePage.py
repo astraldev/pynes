@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
 
 from gi.repository import Gtk
 from threading import Thread
@@ -7,10 +6,8 @@ from time import sleep
 
 from pynes.Blocks.Controls import ControlsBox
 from pynes.Preferences import Preferences
-
-if TYPE_CHECKING:
-    from ..GameHandler import GameHandler
-    from .Tile import Tile, TileBox
+from pynes.GameHandler import GameHandler
+from pynes.Blocks.Tile import Tile, TileBox
 
 class GameBox(Gtk.Box):
     def _setup_page(self, manager: GameHandler, *args):

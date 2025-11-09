@@ -1,6 +1,6 @@
 from gi.repository import Adw
-from ..constants import Definitions
-from .. import VERSION, APP_PREFIX
+from pynes.constants import Definitions
+from pynes import VERSION, APP_PREFIX
 
 class AboutPynes:
     @staticmethod

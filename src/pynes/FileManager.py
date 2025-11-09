@@ -4,14 +4,27 @@ import json
 from gi.repository import GLib
 
 class FileManager:
-    PREF_DIR = os.path.join(GLib.get_user_config_dir(), "pynes")
-    PREF_FILE = os.path.join(PREF_DIR, "preferences.json")
-    USER_THEME_FILE = os.path.join(PREF_DIR, "user_theme.css")
-    DEFAULT_THEME_FILE = os.path.join(PREF_DIR, "default_theme.css")
+    DATA_DIR = ""
+    USER_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "pynes")
+
+    # User set preferences
+    PREF_FILE = os.path.join(USER_CONFIG_DIR, "preferences.json")
+    USER_THEME_FILE = os.path.join(USER_CONFIG_DIR, "user_theme.css")
+    LEADERBOARD_FILE = os.path.join(USER_CONFIG_DIR, "leaderboard.csv")
+
+    # Application data
+    CSS_STYLE_FILE_PATH = os.path.join(DATA_DIR, "css", "style.css")
+    CSS_COLOR_THEME_FILE_PATH = os.path.join(DATA_DIR, "css", "colors.css")
+
+    ICON_BOMB_FILE_PATH = os.path.join(DATA_DIR, "svg", "bomb.svg")
+    ICON_FLAGGED_FILE_PATH = os.path.join(DATA_DIR, "svg", "flagged.svg")
+    ICON_FLAGGED_UNSURE_FILE_PATH = os.path.join(DATA_DIR, "svg", "flagged_unsure.svg")
+
+    APPLICATION_MENU_XML_PATH = os.path.join(DATA_DIR, "menu.xml")
 
     @staticmethod
     def ensure_dir() -> None:
-        os.makedirs(FileManager.PREF_DIR, exist_ok=True)
+        os.makedirs(FileManager.USER_CONFIG_DIR, exist_ok=True)
 
     @staticmethod
     def read_json() -> dict:

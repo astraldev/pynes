@@ -1,15 +1,12 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+
 from random import randint
 from enum import Enum
 from gi.repository import Gtk, GLib
 
+from pynes.GameHandler import GameHandler
+from pynes.FileManager import FileManager
 from pynes.Popups.Leaderboard import LeaderBoardWindow
-
-from ..constants import ICON
-
-if TYPE_CHECKING:
-    from ..GameHandler import GameHandler
 
 class TileType(Enum):
     Plain = 0
@@ -20,6 +17,11 @@ class TileState(Enum):
     Unset = 0
     Flagged = 1
     Unsure = 2
+
+class TileIcons:
+    Flagged = FileManager.ICON_FLAGGED_FILE_PATH
+    Unsure = FileManager.ICON_FLAGGED_UNSURE_FILE_PATH
+    Bomb = FileManager.ICON_BOMB_FILE_PATH
 
 class Tile(Gtk.ToggleButton):
     # The icons should match the tile states
@@ -40,7 +42,7 @@ class Tile(Gtk.ToggleButton):
 
         if mine:
             tl.set_name("mine")
-            b_icon = Gtk.Image.new_from_file(ICON.BOMB)
+            b_icon = Gtk.Image.new_from_file(TileIcons.Bomb)
             b_icon.set_icon_size(Gtk.IconSize.NORMAL)
             tl.set_child(b_icon)
             
@@ -107,7 +109,7 @@ class Tile(Gtk.ToggleButton):
         next_state = self.get_next_state(self.current_state)
 
         if next_state is TileState.Flagged:
-            img = Gtk.Image.new_from_file(ICON.FLAGGED)
+            img = Gtk.Image.new_from_file(TileIcons.Flagged)
             img.set_icon_size(Gtk.IconSize.NORMAL)
 
             self.set_child(img)
@@ -115,7 +117,7 @@ class Tile(Gtk.ToggleButton):
             self.__game_manager.FlaggedTiles.append(self)
         
         elif next_state is TileState.Unsure:
-            img = Gtk.Image.new_from_file(ICON.UNSURE)
+            img = Gtk.Image.new_from_file(TileIcons.Unsure)
             self.set_child(img)
             img.set_icon_size(Gtk.IconSize.NORMAL)
             self.set_name("tile-flagged-u")
@@ -248,7 +250,7 @@ class TileBox(Gtk.Overlay):
                 continue
 
             if all and tile.type is TileType.Bomb:
-                b_icon = Gtk.Image.new_from_file(ICON.BOMB)
+                b_icon = Gtk.Image.new_from_file(TileIcons.Bomb)
                 b_icon.set_icon_size(Gtk.IconSize.NORMAL)
 
                 tile.set_name("mine")

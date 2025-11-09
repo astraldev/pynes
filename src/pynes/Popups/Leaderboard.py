@@ -6,7 +6,7 @@ from pynes.GameHandler import GameHandler
 from pynes.FileManager import FileManager
 import csv
 
-LEADERBOARD_FILE = "leaderboard.csv"
+LEADERBOARD_FILE = FileManager.LEADERBOARD_FILE
 LB_TEXT = "#,User,Tiles,Mines,Time\n"
 
 class LeaderBoardWindow(Adw.Window):
@@ -70,6 +70,12 @@ class LeaderBoardWindow(Adw.Window):
             if loc is not None:
                 self.treeview.set_cursor(loc)
     
+    def hydrate_list_view(self):
+        """Read the current leaderboard file then refresh the list view"""
+        self.store.clear()
+        self.reader = list(csv.reader(FileManager.read_text(LEADERBOARD_FILE)))
+        self._fill_store()
+    
     @staticmethod
     def update_score():
         name = os.environ.get("USER", "Unknown")
@@ -90,5 +96,5 @@ class LeaderBoardWindow(Adw.Window):
 
     def _on_reset(self, *args):
         FileManager.write_text(LEADERBOARD_FILE, LB_TEXT)
-        self.close()
+        self.hydrate_list_view()
 
